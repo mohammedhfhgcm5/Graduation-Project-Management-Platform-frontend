@@ -334,6 +334,18 @@ function projectNames(
   );
 }
 
+function getProjectMemberNames(
+  project: Project,
+  type: 'students' | 'supervisors',
+) {
+  const members =
+    type === 'students'
+      ? getProjectStudents(project)
+      : getProjectSupervisors(project);
+
+  return members.map((member) => member.name.trim()).filter(Boolean);
+}
+
 function savePdfBlob(blob: Blob, scheduleId: string) {
   const url = URL.createObjectURL(
     blob.type ? blob : new Blob([blob], { type: 'application/pdf' }),
@@ -596,14 +608,25 @@ export function DiscussionSchedulesPage() {
       };
 
       if (row.source === 'project') {
-        if (!row.projectId) {
+        const selectedProject = projectById.get(row.projectId);
+
+        if (!selectedProject) {
           setFormError(labels.requiredProject);
           return null;
         }
 
+        const studentNames = getProjectMemberNames(selectedProject, 'students');
+        const supervisorNames = getProjectMemberNames(
+          selectedProject,
+          'supervisors',
+        );
+
         rows.push({
           ...baseRow,
           projectId: row.projectId,
+          projectTitle: selectedProject.title,
+          studentNames,
+          supervisorNames,
         });
         continue;
       }

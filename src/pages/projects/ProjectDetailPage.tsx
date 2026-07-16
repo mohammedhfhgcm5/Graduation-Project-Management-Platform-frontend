@@ -7,6 +7,7 @@ import { projectsService } from '@/api/projects.service';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { CommentForm } from '@/components/forms/CommentForm';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { CommentList } from '@/features/comments/CommentList';
 import { FileList } from '@/features/files/FileList';
 import { FileUpload } from '@/features/files/FileUpload';
@@ -53,6 +54,10 @@ const sectionErrorClassName = 'text-sm text-red-600 dark:text-red-400';
 const selectClassName =
   'h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-800 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 hover:border-slate-400 focus:border-violet-500 focus:outline-none focus:ring-[3px] focus:ring-violet-500/20 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100 dark:hover:border-white/[0.18] dark:focus:bg-violet-500/[0.04]';
 
+function clampProgress(value: number) {
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
+
 function DetailSection({
   title,
   className,
@@ -89,6 +94,10 @@ export function ProjectDetailPage() {
 
   const [pendingStatus, setPendingStatus] = useState<ProjectStatus | null>(null);
   const [pendingSupervisorIds, setPendingSupervisorIds] = useState<string[] | null>(null);
+  const [progressDraft, setProgressDraft] = useState<{
+    projectId: string;
+    value: number;
+  } | null>(null);
 
   const selectedStatus = pendingStatus ?? project?.status ?? 'PENDING_APPROVAL';
   const currentSupervisorIds = getProjectSupervisors(project).map(
@@ -122,6 +131,18 @@ export function ProjectDetailPage() {
         queryClient.invalidateQueries({ queryKey: ['project', id] }),
         queryClient.invalidateQueries({ queryKey: ['projects'] }),
       ]);
+    },
+  });
+
+  const updateProjectProgress = useMutation({
+    mutationFn: (progress: number) =>
+      projectsService.updateProject(id as string, { progress }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['project', id] }),
+        queryClient.invalidateQueries({ queryKey: ['projects'] }),
+      ]);
+      setProgressDraft(null);
     },
   });
 
@@ -159,8 +180,12 @@ export function ProjectDetailPage() {
   const canScheduleMeetings = isAssignedSupervisor;
   const canSubmitReports = isAssignedStudent;
   const canUploadFiles = isAssignedStudent;
+  const canUpdateProgress = isAssignedStudent;
   const canDeleteFiles = isAssignedStudent || isAssignedSupervisor;
   const supervisors = supervisorsQuery.data ?? [];
+  const projectProgress = clampProgress(project.progress);
+  const pendingProgress =
+    progressDraft?.projectId === project.id ? progressDraft.value : projectProgress;
 
   const handleSupervisorToggle = (supervisorId: string) => {
     setPendingSupervisorIds((currentSelection) => {
@@ -193,6 +218,85 @@ export function ProjectDetailPage() {
       <ProjectDetail project={project} />
 
       <div className='grid gap-6 xl:grid-cols-2'>
+        {canUpdateProgress ? (
+          <DetailSection title={t('projectProgressUpdate')}>
+            <div className='space-y-4'>
+              <div className='rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-white/[0.03]'>
+                <div className='flex items-center justify-between gap-3'>
+                  <p className='text-sm font-medium text-slate-700 dark:text-slate-200'>
+                    {t('projectProgressUpdateHelp')}
+                  </p>
+                  <span className='rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-sm font-bold text-violet-700 dark:border-violet-400/20 dark:bg-violet-500/10 dark:text-violet-200'>
+                    {pendingProgress}%
+                  </span>
+                </div>
+                <input
+                  type='range'
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={pendingProgress}
+                  onChange={(event) =>
+                    setProgressDraft({
+                      projectId: project.id,
+                      value: clampProgress(Number(event.target.value)),
+                    })
+                  }
+                  className='mt-4 h-2 w-full cursor-pointer accent-violet-600'
+                  aria-label={t('projectProgress')}
+                />
+              </div>
+
+              <div className='flex flex-col gap-3 lg:flex-row lg:items-center'>
+                <Input
+                  type='number'
+                  min={0}
+                  max={100}
+                  value={pendingProgress}
+                  onChange={(event) =>
+                    setProgressDraft({
+                      projectId: project.id,
+                      value: clampProgress(Number(event.target.value)),
+                    })
+                  }
+                  className='lg:max-w-40'
+                  rightIcon={
+                    <span className='text-xs font-bold text-slate-400'>%</span>
+                  }
+                  aria-label={t('projectProgress')}
+                />
+                <Button
+                  className='w-full lg:w-auto'
+                  onClick={() => updateProjectProgress.mutate(pendingProgress)}
+                  disabled={
+                    updateProjectProgress.isPending ||
+                    pendingProgress === projectProgress
+                  }
+                >
+                  {updateProjectProgress.isPending
+                    ? t('commonSaving')
+                    : t('projectProgressUpdateButton')}
+                </Button>
+              </div>
+
+              {updateProjectProgress.isSuccess ? (
+                <p className='text-sm font-semibold text-emerald-600 dark:text-emerald-300'>
+                  {t('projectProgressUpdateSuccess')}
+                </p>
+              ) : null}
+
+              {updateProjectProgress.error ? (
+                <p className={sectionErrorClassName}>
+                  {getApiErrorMessage(
+                    updateProjectProgress.error,
+                    t('projectProgressUpdateError'),
+                  )}
+                </p>
+              ) : null}
+            </div>
+          </DetailSection>
+        ) : null}
+
         {canManageStatus ? (
           <DetailSection title={t('projectStatusUpdate')}>
             <div className='flex flex-col gap-3 lg:flex-row lg:items-center'>
