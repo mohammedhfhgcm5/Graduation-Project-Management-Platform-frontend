@@ -9,16 +9,24 @@ import { Input } from '@/components/ui/input';
 import { useI18n } from '@/i18n';
 import { getApiErrorMessage } from '@/lib/errors';
 import { useAuthStore } from '@/store/zustand/authStore';
+import { cn } from '@/utils/cn';
 import { roleRedirect } from '@/utils/roleRedirect';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
-  const { t } = useI18n();
+  const { isRtl, locale, setLocale, t } = useI18n();
   const { theme } = useTheme();
   const [values, setValues] = useState<LoginPayload>({ email: '', password: '' });
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState<'email' | 'password' | null>(null);
+  const fieldLabelOffsetClass = isRtl ? 'mr-1' : 'ml-1';
+  const fieldIconClass = isRtl ? 'right-0 pr-3' : 'left-0 pl-3';
+  const inputIconPaddingClass = isRtl ? 'pr-10' : 'pl-10';
+  const underlinePositionClass = isRtl ? 'right-0' : 'left-0';
+  const submitArrowClass = isRtl
+    ? 'rotate-180 group-hover:-translate-x-1'
+    : 'group-hover:translate-x-1';
 
   const mutation = useMutation({
     mutationFn: authService.login,
@@ -41,6 +49,18 @@ export function LoginPage() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <button
+        type="button"
+        aria-label={t('languageLabel')}
+        className={cn(
+          'absolute top-4 z-20 rounded-md border border-slate-200 bg-white/80 px-3 py-1 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition hover:bg-white dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:bg-slate-900',
+          isRtl ? 'left-4' : 'right-4',
+        )}
+        onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
+      >
+        {locale === 'en' ? t('languageArabic') : t('languageEnglish')}
+      </button>
+
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Primary Gradient Orb */}
@@ -122,13 +142,21 @@ export function LoginPage() {
               style={{ animation: 'fadeInUp 0.6s ease-out 0.5s both' }}
             >
               <label 
-                className="block text-sm font-semibold text-slate-700 dark:text-slate-200 ml-1 transition-colors group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400"
+                className={cn(
+                  'block text-sm font-semibold text-slate-700 transition-colors group-focus-within:text-indigo-600 dark:text-slate-200 dark:group-focus-within:text-indigo-400',
+                  fieldLabelOffsetClass,
+                )}
                 htmlFor="login-email"
               >
                 {t('authEmail')}
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div
+                  className={cn(
+                    'absolute inset-y-0 flex items-center pointer-events-none',
+                    fieldIconClass,
+                  )}
+                >
                   <svg 
                     className={`h-5 w-5 transition-colors duration-300 ${focusedField === 'email' ? 'text-indigo-500' : 'text-slate-400'}`}
                     fill="none" 
@@ -148,11 +176,20 @@ export function LoginPage() {
                   }
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
-                  className="pl-10 h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 w-full"
-                  placeholder="name@company.com"
+                  className={cn(
+                    'h-12 w-full rounded-xl border-slate-200 bg-slate-50/50 transition-all duration-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:focus:bg-slate-800',
+                    inputIconPaddingClass,
+                  )}
+                  placeholder={t('authEmailPlaceholder')}
                   required
                 />
-                <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500 rounded-full ${focusedField === 'email' ? 'w-full' : 'w-0'}`} />
+                <div
+                  className={cn(
+                    'absolute bottom-0 h-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500',
+                    underlinePositionClass,
+                    focusedField === 'email' ? 'w-full' : 'w-0',
+                  )}
+                />
               </div>
             </div>
 
@@ -161,7 +198,12 @@ export function LoginPage() {
               className="space-y-2 group"
               style={{ animation: 'fadeInUp 0.6s ease-out 0.6s both' }}
             >
-              <div className="flex items-center justify-between ml-1">
+              <div
+                className={cn(
+                  'flex items-center justify-between',
+                  fieldLabelOffsetClass,
+                )}
+              >
                 <label 
                   className="block text-sm font-semibold text-slate-700 dark:text-slate-200 transition-colors group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400"
                   htmlFor="login-password"
@@ -171,7 +213,12 @@ export function LoginPage() {
                
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div
+                  className={cn(
+                    'absolute inset-y-0 flex items-center pointer-events-none',
+                    fieldIconClass,
+                  )}
+                >
                   <svg 
                     className={`h-5 w-5 transition-colors duration-300 ${focusedField === 'password' ? 'text-indigo-500' : 'text-slate-400'}`}
                     fill="none" 
@@ -194,11 +241,20 @@ export function LoginPage() {
                   }
                   onFocus={() => setFocusedField('password')}
                   onBlur={() => setFocusedField(null)}
-                  className="pl-10 h-12 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-300 w-full"
-                  placeholder="••••••••"
+                  className={cn(
+                    'h-12 w-full rounded-xl border-slate-200 bg-slate-50/50 transition-all duration-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800/50 dark:focus:bg-slate-800',
+                    inputIconPaddingClass,
+                  )}
+                  placeholder="********"
                   required
                 />
-                <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500 rounded-full ${focusedField === 'password' ? 'w-full' : 'w-0'}`} />
+                <div
+                  className={cn(
+                    'absolute bottom-0 h-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500',
+                    underlinePositionClass,
+                    focusedField === 'password' ? 'w-full' : 'w-0',
+                  )}
+                />
               </div>
             </div>
 
@@ -237,7 +293,7 @@ export function LoginPage() {
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {t('authLoginButton')}
                     <svg 
-                      className="w-4 h-4 transition-transform group-hover:translate-x-1" 
+                      className={cn('w-4 h-4 transition-transform', submitArrowClass)}
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -274,7 +330,7 @@ export function LoginPage() {
               href="/register" 
               className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors hover:underline underline-offset-2"
             >
-              {t('authNoAccount')}
+              {t('authRegisterLink')}
             </a>
           </p>
         </div>

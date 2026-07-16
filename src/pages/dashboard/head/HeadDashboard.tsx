@@ -1,4 +1,11 @@
-import { ArrowLeft, ArrowRight, Bell, ShieldCheck, Users } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Bell,
+  CalendarDays,
+  ShieldCheck,
+  Users,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { UserManagementSection } from '@/features/users/UserManagementSection';
@@ -26,7 +33,7 @@ export function HeadDashboard() {
         </h1>
       </div>
 
-      <div className='grid gap-4 xl:grid-cols-3'>
+      <div className='grid gap-4 xl:grid-cols-4'>
         <Card glow='violet' className='border-white/[0.08] bg-[#1a1825]'>
           <CardHeader className='mb-5'>
             <CardIcon className='border-violet-400/20 bg-gradient-to-br from-violet-600 to-indigo-600 text-white'>
@@ -85,6 +92,27 @@ export function HeadDashboard() {
               to='/notifications'
             >
               {t('notificationsTitle')}
+              <ArrowIcon className='h-4 w-4' />
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card glow='sky' className='border-white/[0.08] bg-[#1a1825]'>
+          <CardHeader className='mb-5'>
+            <CardIcon className='border-sky-400/20 bg-gradient-to-br from-sky-500 to-indigo-600 text-white'>
+              <CalendarDays className='h-5 w-5' />
+            </CardIcon>
+            <CardTitle>{t('navDiscussionSchedules')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className='text-sm leading-6 text-[#b0aacd]'>
+              {t('discussionSchedulesDashboardDescription')}
+            </p>
+            <Link
+              className='inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1.5 text-sm font-semibold text-[#e8f3ff] transition hover:border-sky-300/30 hover:bg-sky-500/15'
+              to='/discussion-schedules'
+            >
+              {t('navDiscussionSchedules')}
               <ArrowIcon className='h-4 w-4' />
             </Link>
           </CardContent>

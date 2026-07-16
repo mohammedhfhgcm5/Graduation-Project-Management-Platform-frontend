@@ -94,6 +94,37 @@ export interface Project {
   updatedAt: string;
 }
 
+export interface DiscussionScheduleItem {
+  id: string;
+  projectId?: string | null;
+  project?: Project | null;
+  projectTitle: string;
+  studentNames: string[];
+  supervisorNames: string[];
+  committeeNames: string[];
+  startsAt: string;
+  endsAt: string;
+  room?: string | null;
+  slotOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DiscussionSchedule {
+  id: string;
+  title: string;
+  academicYear: string;
+  semester: string;
+  discussionDate: string;
+  department?: string | null;
+  location?: string | null;
+  chairName?: string | null;
+  createdBy?: UserSummary | null;
+  items: DiscussionScheduleItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface AppNotification {
   id: string;
   userId: string;

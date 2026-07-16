@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Bell,
+  CalendarDays,
   FilePlus2,
   FolderOpen,
   Home,
@@ -43,6 +44,10 @@ function isProjectsArea(pathname: string) {
     pathname === '/projects' ||
     (pathname.startsWith('/projects/') && pathname !== '/projects/new')
   );
+}
+
+function isDiscussionSchedulesArea(pathname: string) {
+  return pathname === '/discussion-schedules';
 }
 
 function getRoleNavigationItems(
@@ -89,10 +94,20 @@ function getRoleNavigationItems(
     isActive: (pathname) => pathname === '/notifications',
   };
 
+  const discussionSchedulesItem: RoleNavigationItem = {
+    label: t('navDiscussionSchedules'),
+    description: t('discussionSchedulesDashboardDescription'),
+    path: '/discussion-schedules',
+    icon: CalendarDays,
+    iconClassName: 'from-cyan-500 to-blue-600',
+    isActive: isDiscussionSchedulesArea,
+  };
+
   if (role === 'STUDENT') {
     return [
       dashboardItem,
       projectItem,
+      discussionSchedulesItem,
       {
         label: t('projectsNew'),
         description: t('dashboardStudentPrimaryDescription'),
@@ -105,7 +120,7 @@ function getRoleNavigationItems(
     ];
   }
 
-  return [dashboardItem, projectItem, notificationsItem];
+  return [dashboardItem, projectItem, discussionSchedulesItem, notificationsItem];
 }
 
 export function RoleNavigationPanel() {

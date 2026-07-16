@@ -8,6 +8,7 @@ import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { HeadDashboard } from '@/pages/dashboard/head/HeadDashboard';
 import { StudentDashboard } from '@/pages/dashboard/student/StudentDashboard';
 import { SupervisorDashboard } from '@/pages/dashboard/supervisor/SupervisorDashboard';
+import { DiscussionSchedulesPage } from '@/pages/discussion-schedules/DiscussionSchedulesPage';
 import { NewProjectPage } from '@/pages/projects/NewProjectPage';
 import { ProjectDetailPage } from '@/pages/projects/ProjectDetailPage';
 import { ProjectsListPage } from '@/pages/projects/ProjectsListPage';
@@ -87,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: 'projects/:id',
         element: <ProjectDetailPage />,
+      },
+      {
+        path: 'discussion-schedules',
+        element: <DiscussionSchedulesPage />,
       },
       {
         path: 'notifications',

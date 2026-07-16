@@ -101,7 +101,7 @@ export function UserManagementSection() {
     },
   });
 
-  const users = usersQuery.data ?? [];
+  const users = useMemo(() => usersQuery.data ?? [], [usersQuery.data]);
 
   const filteredUsers = useMemo(() => {
     return [...users]

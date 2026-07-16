@@ -69,7 +69,7 @@ export function ProjectForm({
           onChange={(event) =>
             setValues((current) => ({ ...current, title: event.target.value }))
           }
-          placeholder='Smart Campus Navigation System'
+          placeholder={t('projectTitlePlaceholder')}
           disabled={disabled}
           autoFocus
           required

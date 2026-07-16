@@ -1,4 +1,5 @@
 import type { UserSummary } from '@/types';
+import { getRoleLabel, useI18n } from '@/i18n';
 import { cn } from '@/utils/cn';
 import { getUserInitials } from '@/utils/projectMembers';
 
@@ -109,11 +110,13 @@ export function ProjectMemberOption({
   disabled?: boolean;
   tone?: keyof typeof toneClasses;
 }) {
+  const { t } = useI18n();
+
   return (
     <button
       type='button'
       className={cn(
-        'w-full rounded-2xl border p-4 text-left transition-all duration-200',
+        'w-full rounded-2xl border p-4 text-start transition-all duration-200',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50',
         selected
           ? 'border-violet-400/70 bg-violet-50 shadow-sm dark:border-violet-400/40 dark:bg-violet-500/10'
@@ -155,7 +158,7 @@ export function ProjectMemberOption({
       </div>
 
       <p className='mt-3 text-xs text-slate-500 dark:text-slate-400'>
-        {member.department?.trim() || member.role}
+        {member.department?.trim() || getRoleLabel(member.role, t)}
       </p>
     </button>
   );

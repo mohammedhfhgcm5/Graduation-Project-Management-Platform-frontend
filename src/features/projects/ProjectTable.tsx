@@ -13,7 +13,7 @@ export function ProjectTable({ projects }: { projects: Project[] }) {
   return (
     <div className='overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/85 shadow-[0_18px_45px_rgba(15,23,42,0.08)] backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/45 dark:shadow-[0_24px_60px_rgba(2,6,23,0.42)]'>
       <div className='overflow-x-auto'>
-        <table className='min-w-[960px] w-full border-collapse text-left text-sm'>
+        <table className='min-w-[960px] w-full border-collapse text-start text-sm'>
           <thead className='border-b border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-slate-50/80 dark:border-white/10 dark:from-slate-950/95 dark:via-slate-900/80 dark:to-slate-950/95'>
             <tr>
               <th className='px-5 py-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400'>

@@ -31,26 +31,6 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
 const STORAGE_KEY = 'gpmp-locale';
-const localeOverrides: Partial<
-  Record<Locale, Partial<Record<TranslationKey, string>>>
-> = {
-  ar: {
-    projectsTableOwner: 'الطلبة',
-    projectsTableSupervisor: 'المشرفون',
-    projectStudent: 'الطلبة',
-    projectSupervisor: 'المشرفون',
-    projectAssignSupervisor: 'تعيين المشرفين',
-    projectSupervisorPlaceholder: 'اختر من 1 إلى 3 مشرفين',
-    projectAssignSupervisorButton: 'حفظ المشرفين',
-    projectStudentTeam: 'فريق الطلبة',
-    projectStudentTeamHelp:
-      'أنت مضاف تلقائياً. أضف حتى طالبين آخرين ليصبح الحد الأقصى 3 طلبة في المشروع.',
-    projectStudentTeamEmpty: 'لا يوجد زملاء مضافون بعد.',
-    projectSupervisorSelectionHelp:
-      'اختر من 1 إلى 3 مشرفين. سيتم استبدال القائمة الحالية بالكامل عند الحفظ.',
-    projectAccessDenied: 'ليست لديك صلاحية للوصول إلى هذا المشروع.',
-  },
-};
 
 function getInitialLocale(): Locale {
   const savedLocale = localStorage.getItem(STORAGE_KEY);
@@ -89,11 +69,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const localeTranslations = translations[locale] as Partial<
         Record<TranslationKey, string>
       >;
-      const template =
-        localeOverrides[locale]?.[key] ??
-        localeTranslations[key] ??
-        translations.en[key] ??
-        key;
+      const template = localeTranslations[key] ?? translations.en[key] ?? key;
       return interpolate(template, values);
     },
     [locale],
